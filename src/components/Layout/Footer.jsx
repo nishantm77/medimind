@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const socialVariants = {
@@ -24,9 +25,9 @@ const Footer = () => {
           <div className="footer-section">
             <h4>Resources</h4>
             <ul>
-              <li><a href="#">Documentation</a></li>
-              <li><a href="#">API</a></li>
-              <li><a href="#">Privacy Policy</a></li>
+              <li><Link to="/documentation">Documentation</Link></li>
+              <li><Link to="/api">API</Link></li>
+              <li><Link to="/privacy">Privacy Policy</Link></li>
             </ul>
           </div>
         </div>

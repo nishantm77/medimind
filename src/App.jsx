@@ -5,6 +5,8 @@ import Layout from './components/Layout/Layout';
 import HomePage from './components/Home/HomePage';
 import ChatInterface from './components/Chat/ChatInterface';
 import AboutPage from './components/About/AboutPage';
+import Documentation from './components/Documentation/Documentation';
+import PrivacyPolicy from './components/Privacy/PrivacyPolicy';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatInterface />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/documentation" element={<Documentation />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
         </Routes>
       </Layout>
     </Router>
