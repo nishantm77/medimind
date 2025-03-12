@@ -1,41 +1,88 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaPaperPlane, FaRobot, FaUser, FaMicrophone, FaImage } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [displayText, setDisplayText] = useState('');
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Simulate AI response
-  const simulateResponse = (query, imageUrl = null) => {
-    setIsTyping(true);
-    
-    // Simulate network delay
-    setTimeout(() => {
-      let response = '';
-      
-      if (imageUrl) {
-        response = 'I have received your image. Based on the visual information provided, I can assist you better. What specific aspects would you like me to analyze?';
-      } else if (query.toLowerCase().includes('symptom')) {
-        response = 'Based on the symptoms you described, this could be related to several conditions. Would you like me to analyze further or provide information about specific treatments?';
-      } else if (query.toLowerCase().includes('guideline')) {
-        response = 'The latest clinical guidelines recommend a step-wise approach for this condition. First-line treatments include lifestyle modifications and monitoring. Would you like me to elaborate on specific protocols?';
+  // Format text into paragraphs
+  const formatText = (text) => {
+    return text.split('\n').filter(para => para.trim() !== '').map(para => para.trim());
+  };
+
+  // Typewriter effect function
+  const typewriterEffect = (text, callback) => {
+    let index = 0;
+    const words = text.split(' ');
+    const interval = setInterval(() => {
+      if (index < words.length) {
+        setDisplayText(prev => prev + words[index] + ' ');
+        index++;
       } else {
-        response = 'I understand your query about medical information. As an AI assistant, I can provide general information, but please consult with a healthcare professional for personalized medical advice.';
+        clearInterval(interval);
+        if (callback) callback();
       }
+    }, 50); // Adjust speed here
+    return () => clearInterval(interval);
+  };
+
+  // Send message to API and get response
+  const sendMessageToAPI = async (query, imageUrl = null) => {
+    setIsTyping(true);
+    setDisplayText('');
+    try {
+      const messageData = {
+        question: query
+      };
+
+      const response = await fetch('http://localhost:5000/api/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(messageData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const formattedParagraphs = formatText(data.answer);
       
+      // Add empty AI message first
+      const aiMessage = {
+        id: Date.now(),
+        text: '',
+        sender: 'ai',
+        paragraphs: formattedParagraphs
+      };
+      setMessages(prev => [...prev, aiMessage]);
+
+      // Start typewriter effect
+      typewriterEffect(formattedParagraphs.join(' '), () => {
+        setIsTyping(false);
+      });
+
+    } catch (error) {
+      console.error('Error:', error);
       setMessages(prev => [...prev, {
         id: Date.now(),
-        text: response,
+        text: 'Sorry, I encountered an error. Please try again.',
         sender: 'ai'
       }]);
-      
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleImageUpload = (e) => {
@@ -78,7 +125,7 @@ const ChatInterface = () => {
     setSelectedImage(null);
     
     // Get AI response
-    simulateResponse(input, selectedImage);
+    sendMessageToAPI(input, selectedImage);
   };
 
   // Auto-scroll to bottom of messages
@@ -142,7 +189,38 @@ const ChatInterface = () => {
                       style={{ maxWidth: '200px', borderRadius: '8px', marginBottom: '8px' }}
                     />
                   )}
-                  <p>{message.text}</p>
+                  {message.sender === 'ai' && message.paragraphs ? (
+                    message.paragraphs.map((para, index) => (
+                      <div key={index} className="markdown-content">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            code({ node, inline, className, children, ...props }) {
+                              const match = /language-(\w+)/.exec(className || '');
+                              return !inline && match ? (
+                                <SyntaxHighlighter
+                                  style={atomDark}
+                                  language={match[1]}
+                                  PreTag="div"
+                                  {...props}
+                                >
+                                  {String(children).replace(/\n$/, '')}
+                                </SyntaxHighlighter>
+                              ) : (
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
+                          }}
+                        >
+                          {index === message.paragraphs.length - 1 ? displayText : para}
+                        </ReactMarkdown>
+                      </div>
+                    ))
+                  ) : (
+                    <p>{message.text}</p>
+                  )}
                 </div>
               </motion.div>
             ))
