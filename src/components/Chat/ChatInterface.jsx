@@ -45,7 +45,7 @@ const ChatInterface = () => {
         question: query
       };
 
-      const response = await fetch('http://localhost:5000/api/ask', {
+      const response = await fetch('https://care-connect-delta.vercel.app/api/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
