@@ -36,15 +36,15 @@ const AboutPage = () => {
       name: 'Shubham Kukreti',
       image: '/src/assets/Shubham.png',
       role: 'Project Developer',
-      github: '#',
-      linkedin: '#'
+      github: 'https://github.com/SKukreti0107',
+      linkedin: 'https://www.linkedin.com/in/shubh-kukreti/'
     },
     {
       name: 'Venkatesh Gauri Shankar',
       image: '/src/assets/Venkatesh.png',
       role: 'Faculty Mentor',
       github: '#',
-      linkedin: '#'
+      linkedin: 'https://www.linkedin.com/in/venkatesh-gauri-shankar-60a862a0/'
     }
   ];
 
