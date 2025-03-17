@@ -870,3 +870,24 @@ button {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin: 1rem 0;
 }
+
+.disclaimer-container {
+  background-color: rgba(36, 38, 41, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin: 1rem 0;
+  padding: 1rem;
+  width: 100%;
+}
+
+.disclaimer-content {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.disclaimer-content strong {
+  color: var(--primary);
+  font-weight: 600;
+}

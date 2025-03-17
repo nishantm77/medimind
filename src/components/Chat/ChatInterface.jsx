@@ -243,6 +243,17 @@ const ChatInterface = () => {
         </AnimatePresence>
       </div>
       
+      <motion.div 
+        className="disclaimer-container"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <div className="disclaimer-content">
+          <p><strong>Disclaimer:</strong> This AI tool is for educational purposes only. The medical information provided is subjective and should not be used for self-diagnosis. For actual diagnosis and treatment, please consult a registered doctor or physician.</p>
+        </div>
+      </motion.div>
+      
       <form onSubmit={handleSubmit} className="chat-input-container">
         <motion.div 
           className="chat-input-wrapper"
